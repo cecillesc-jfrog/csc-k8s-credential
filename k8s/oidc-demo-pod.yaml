@@ -1,0 +1,11 @@
+# No imagePullSecrets on purpose: the JFrog kubelet credential provider supplies the registry credentials.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oidc-demo
+  namespace: default
+spec:
+  restartPolicy: Never
+  containers:
+    - name: hello
+      image: hts2-csc-project-docker-local.jfrog.io/oidc-demo/hello:BUILD_NUMBER

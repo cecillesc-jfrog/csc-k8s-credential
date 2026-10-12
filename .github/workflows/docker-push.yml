@@ -1,0 +1,45 @@
+name: Build and Push Demo Image
+on:
+  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read
+env:
+  REGISTRY: hts2-csc-project-docker-local.jfrog.io
+  IMAGE: hts2-csc-project-docker-local.jfrog.io/oidc-demo/hello
+jobs:
+  build-push:
+    runs-on: [self-hosted, macOS]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JFrog CLI (OIDC)
+        id: jfrog
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ secrets.JF_URL }}
+        with:
+          oidc-provider-name: csc-github-oidc
+          oidc-audience: jfrog-github
+
+      - name: Docker login with the OIDC token
+        run: |
+          echo "${{ steps.jfrog.outputs.oidc-token }}" | \
+            docker login "$REGISTRY" -u "${{ steps.jfrog.outputs.oidc-user }}" --password-stdin
+
+      - name: Build the image (linux/amd64 for the EKS nodes)
+        run: |
+          docker build --platform linux/amd64 \
+            --build-arg BUILD_NUMBER=${{ github.run_number }} \
+            -t "$IMAGE:${{ github.run_number }}" .
+
+      - name: Push to Artifactory
+        run: docker push "$IMAGE:${{ github.run_number }}"
+
+      - name: Verify in Artifactory
+        run: jf rt curl -XGET "/api/docker/csc-project-docker-local/v2/oidc-demo/hello/tags/list"
+
+      - name: Pull command for the cluster
+        run: |
+          echo "Image pushed: $IMAGE:${{ github.run_number }}"
+          echo "On the cluster run:  ./k8s/run-pull-test.sh ${{ github.run_number }}"
