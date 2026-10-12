@@ -1,11 +1,17 @@
 # No imagePullSecrets on purpose: the JFrog kubelet credential provider supplies the registry credentials.
+# Placeholders are filled in by run-pull-test.sh: POD_NAME, NODE_GROUP, BUILD_NUMBER.
 apiVersion: v1
 kind: Pod
 metadata:
-  name: oidc-demo
+  name: POD_NAME
   namespace: default
 spec:
   restartPolicy: Never
+  nodeSelector:
+    eks.amazonaws.com/nodegroup: NODE_GROUP
   containers:
     - name: hello
       image: hts2-csc-project-docker-local.jfrog.io/oidc-demo/hello:BUILD_NUMBER
+      # Always asks the registry on every start, so the kubelet calls the credential provider
+      # even when the image is already on the node.
+      imagePullPolicy: Always

@@ -1,0 +1,31 @@
+# The published examples/aws-values.yaml with ONLY the placeholders replaced (nothing else changed).
+# Used to test that the official example works as written.
+#   artifactoryUrl:  <artifactory-url>                -> hts2.jfrog.io
+#   matchImages:     "*.<test.your-org.domain.io>"    -> "*.jfrog.io"   (matches hts2-csc-project-docker-local.jfrog.io)
+#   aws_role_name:   "<test-role-arn>"                -> the node role ARN, as the placeholder says
+providerConfig:
+  - name: jfrog-credentials-provider
+    artifactoryUrl: hts2.jfrog.io
+    matchImages:
+      - "*.jfrog.io"
+    defaultCacheDuration: 5h
+    aws:
+      enabled: true
+      aws_auth_method: "assume_role"
+      aws_role_name: "arn:aws:iam::035274893828:role/cecillesc-eks-node-role"
+
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/arch
+              operator: In
+              values:
+                - amd64
+                - arm64
+            - key: credentialsProviderEnabled
+              operator: In
+              values:
+                - "true"

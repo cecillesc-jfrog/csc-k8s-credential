@@ -42,4 +42,4 @@ jobs:
       - name: Pull command for the cluster
         run: |
           echo "Image pushed: $IMAGE:${{ github.run_number }}"
-          echo "On the cluster run:  ./k8s/run-pull-test.sh ${{ github.run_number }}"
+          echo "On the cluster run:  ./k8s/run-pull-test.sh ${{ github.run_number }} [a|b|both]"

@@ -1,0 +1,30 @@
+# Path A values: the official examples/aws-values.yaml with the placeholders filled in.
+# Changed from the published file: artifactoryUrl, matchImages (two patterns), defaultCacheDuration (5m), aws_role_name (the role NAME, not the ARN).
+# Helm values for the JFrog kubelet credential provider on cecillesc-cluster (EKS, ap-south-1).
+# Method: IAM Role Assumption, EC2 instance metadata (assume_role).
+providerConfig:
+  - name: jfrog-credentials-provider
+    artifactoryUrl: hts2.jfrog.io
+    matchImages:
+      - "hts2.jfrog.io"
+      - "hts2*.jfrog.io"      # covers the subdomain Docker format hts2-<repo>.jfrog.io
+    defaultCacheDuration: 5m
+    aws:
+      enabled: true
+      aws_auth_method: "assume_role"
+      aws_role_name: "cecillesc-eks-node-role"   # role NAME, not the ARN
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/arch
+              operator: In
+              values:
+                - amd64
+                - arm64
+            - key: credentialsProviderEnabled
+              operator: In
+              values:
+                - "true"
