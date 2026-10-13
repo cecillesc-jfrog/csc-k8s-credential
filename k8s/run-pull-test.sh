@@ -34,6 +34,4 @@ case "$WHICH" in
 esac
 
 echo
-echo "Kubernetes events expire after about an hour: capture screenshots now."
-echo "Then check hts2 > Administration > Identity and Access > Access Tokens for"
-echo "'Generated access token for Aws assumed role token exchange'."
+echo "Then check for 'Generated access token for Aws assumed role token exchange'."
