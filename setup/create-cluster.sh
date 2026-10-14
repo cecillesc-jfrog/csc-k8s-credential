@@ -16,7 +16,7 @@ ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 # Shared cluster role that already exists in the account (used by petera-cluster).
 CLUSTER_ROLE_ARN="arn:aws:iam::${ACCOUNT}:role/AmazonEKSAutoClusterRole"
 
-# Your own node role. One IAM role can be bound to only one Artifactory user, so do not reuse petera-nodegroup-role.
+# Your own node role. One IAM role can be bound to only one Artifactory user.
 NODE_ROLE=cecillesc-eks-node-role
 
 # Shared cs-mumbai-vpc (vpc-035c32a7304fca214): 2 public + 2 private subnets.
